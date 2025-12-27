@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy Birthday Bindhu</title>
+  <style>
+    :root{
+      --bg1:#ff9a9e; --bg2:#fad0c4; --card:#ffffffee; --accent:#ff6f91;
+      --glass: rgba(255,255,255,0.6);
+    }
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{
+      display:flex;align-items:center;justify-content:center;
+      background: radial-gradient(circle at 10% 20%, var(--bg1), transparent 25%),
+                  radial-gradient(circle at 90% 80%, var(--bg2), transparent 25%),
+                  linear-gradient(135deg, #fff0f2, #fffaf0);
+      overflow:hidden;
+    }
+    .card{
+      width:920px; max-width:95vw; background:var(--card); border-radius:18px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.12); padding:28px; display:flex; gap:24px;
+      align-items:center;
+      backdrop-filter: blur(6px);
+    }
+    .photo{
+      flex:0 0 320px; max-width:40%;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .photo img{
+      width:300px;height:300px;object-fit:cover;border-radius:18px;
+      box-shadow:0 12px 30px rgba(0,0,0,0.15); border:6px solid var(--glass);
+    }
+    .content{flex:1; color:#333;}
+    h1{margin:0 0 6px;font-size:34px;color:var(--accent);}
+    p.subtitle{margin:0 0 18px;color:#444;font-weight:600}
+    .quote-box{
+      background:linear-gradient(180deg,rgba(255,255,255,0.7),rgba(255,255,255,0.85));
+      padding:18px;border-radius:12px;border:1px solid rgba(0,0,0,0.04);
+      min-height:120px; display:flex; align-items:center; justify-content:center;
+      text-align:center; font-size:20px; line-height:1.4; color:#222;
+      position:relative; overflow:hidden;
+    }
+    .quote{opacity:0; transform:translateY(8px); transition:all .6s ease;}
+    .quote.show{opacity:1; transform:translateY(0);}
+    .controls{margin-top:14px; display:flex; gap:10px; align-items:center;}
+    button{background:var(--accent); color:white;border:none;padding:8px 14px;border-radius:10px;cursor:pointer}
+    button.secondary{background:#eee;color:#333}
+    /* confetti (simple animated dots) */
+    .confetti{
+      pointer-events:none; position:fixed; inset:0; z-index:2;
+    }
+    .confetti span{
+      position:absolute;width:10px;height:14px;background:var(--accent);opacity:.95;
+      transform-origin:center; animation:fall 3s linear infinite;
+      border-radius:2px;
+    }
+    @keyframes fall{
+      0%{transform:translateY(-10vh) rotate(0deg); opacity:1}
+      100%{transform:translateY(110vh) rotate(360deg); opacity:0}
+    }
+    @media (max-width:700px){
+      .card{flex-direction:column;padding:18px}
+      .photo{flex:0 0 auto}
+      .photo img{width:220px;height:220px}
+      h1{font-size:26px}
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="region" aria-label="Happy birthday card">
+    <div class="photo">
+      <!-- Replace 'sister.jpg' with your sister's photo file (put it in same folder) -->
+      <img src="sister.jpg" alt="Bindhu" id="sisterPhoto">
+    </div>
+    <div class="content">
+      <h1>Happy Birthday, Bindhu!</h1>
+      <p class="subtitle">To my sister — laughter, love and magic in every moment.</p>
+
+      <div class="quote-box" aria-live="polite">
+        <div class="quote show" id="quoteText">Wishing you a day filled with love, joy and your favorite cake!</div>
+      </div>
+
+      <div class="controls">
+        <button id="prev">Previous</button>
+        <button id="next">Next</button>
+        <button id="shuffle" class="secondary">Shuffle Quotes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="confetti" id="confetti"></div>
+
+  <script>
+    // list of sister quotes — edit or add your own
+    const quotes = [
+      "Sisters are different flowers from the same garden. Happy Birthday!",
+      "To my best friend and partner-in-crime — happiest birthday, sis!",
+      "You are my first friend, my forever friend. Love you always.",
+      "Growing up with you made every day an adventure. Enjoy your day!",
+      "Thank you for being you — beautiful, kind and brave. Happy Birthday!",
+      "May your smile today be as bright as the joy you bring me.",
+      "No matter how old we get, you'll always be my little sister. Celebrate big!"
+    ];
+
+    let idx = 0;
+    const quoteEl = document.getElementById('quoteText');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const shuffleBtn = document.getElementById('shuffle');
+
+    function showQuote(i){
+      idx = (i + quotes.length) % quotes.length;
+      const newText = quotes[idx];
+      // fade out/in
+      quoteEl.classList.remove('show');
+      setTimeout(()=>{ quoteEl.textContent = newText; quoteEl.classList.add('show'); }, 200);
+    }
+
+    prevBtn.addEventListener('click', ()=> showQuote(idx-1));
+    nextBtn.addEventListener('click', ()=> showQuote(idx+1));
+    shuffleBtn.addEventListener('click', ()=>{
+      for (let i = quotes.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [quotes[i], quotes[j]] = [quotes[j], quotes[i]];
+      }
+      showQuote(0);
+    });
+
+    // auto-rotate quotes every 5s
+    setInterval(()=> showQuote(idx+1), 5000);
+
+    // simple confetti generator
+    const confettiEl = document.getElementById('confetti');
+    function spawnConfetti(count=20){
+      confettiEl.innerHTML = '';
+      for(let i=0;i<count;i++){
+        const s = document.createElement('span');
+        const left = Math.random()*100;
+        s.style.left = left + 'vw';
+        s.style.background = `hsl(${Math.random()*360}deg,80%,60%)`;
+        s.style.width = (6+Math.random()*10) + 'px';
+        s.style.height = (8+Math.random()*12) + 'px';
+        s.style.animationDuration = (2+Math.random()*3) + 's';
+        s.style.top = (-10-Math.random()*20)+'vh';
+        confettiEl.appendChild(s);
+      }
+    }
+    // spawn confetti on load
+    spawnConfetti(30);
+
+    // optional: click photo to replace image (uses file picker)
+    document.getElementById('sisterPhoto').addEventListener('click', async ()=>{
+      try{
+        // only works in browsers supporting showOpenFilePicker (not all). If not supported, do nothing.
+        if(window.showOpenFilePicker){
+          const [fileHandle] = await window.showOpenFilePicker({types:[{description:'Images',accept:{'image/*':['.png','.jpg','.jpeg','.gif']}}], multiple:false});
+          const file = await fileHandle.getFile();
+          const url = URL.createObjectURL(file);
+          document.getElementById('sisterPhoto').src = url;
+        } else {
+          alert('To change the photo, replace sister.jpg in the same folder as this HTML file.');
+        }
+      }catch(e){}
+    });
+  </script>
+</body>
+</html>
